@@ -22,6 +22,19 @@ def roll_dice(num_rolls, dice=six_sided):
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    total = 0
+    flag=False
+    while num_rolls > 0:
+        num_rolls -= 1
+        roll = dice()
+        if roll == 1:
+            flag=True
+        else:
+            total += roll
+    if flag:
+        return 1
+    else:
+        return total
     # END PROBLEM 1
 
 
@@ -33,6 +46,7 @@ def free_bacon(score):
     assert score < 100, 'The game should be over.'
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+    return 10 + score // 10 - score % 10
     # END PROBLEM 2
 
 
@@ -51,6 +65,10 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     assert opponent_score < 100, 'The game should be over.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if num_rolls==0:
+        return free_bacon(opponent_score)
+    else:
+        return roll_dice(num_rolls,dice)
     # END PROBLEM 3
 
 
@@ -60,6 +78,10 @@ def is_swap(player_score, opponent_score):
     """
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    if abs(player_score%10-opponent_score%10)==(opponent_score//10)%10:
+        return True
+    else:
+        return False
     # END PROBLEM 4
 
 
@@ -100,6 +122,29 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    pre_0=0
+    pre_1=0
+    while score0<goal and score1<goal:
+        if who==0:
+            num_rolls=strategy0(score0,score1)
+            score_game=take_turn(num_rolls,score1,dice)
+            score0+=score_game
+            if feral_hogs and abs(num_rolls-pre_0)==2:
+                score0+=3
+            if is_swap(score0,score1):
+                score0,score1=score1,score0
+            pre_0=score_game
+        else:
+            num_rolls=strategy1(score1,score0)
+            score_game=take_turn(num_rolls,score0,dice)
+            score1+=score_game
+            if feral_hogs and abs(num_rolls-pre_1)==2:
+                score1+=3
+            if is_swap(score1,score0):
+                score0,score1=score1,score0
+            pre_1=score_game
+        who=other(who)
+        # say=say(score0,score1)
     # END PROBLEM 5
     # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 6
