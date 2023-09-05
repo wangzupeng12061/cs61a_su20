@@ -96,6 +96,18 @@ def autocorrect(user_word, valid_words, diff_function, limit):
     """
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    if user_word in valid_words:
+        return user_word
+    min_diff = limit + 1
+    min_word = user_word
+    for word in valid_words:
+        diff = diff_function(user_word, word, limit)
+        if diff < min_diff:
+            min_diff = diff
+            min_word = word
+    if min_diff <= limit:
+        return min_word
+    return user_word
     # END PROBLEM 5
 
 
@@ -105,31 +117,54 @@ def shifty_shifts(start, goal, limit):
     their lengths.
     """
     # BEGIN PROBLEM 6
-    assert False, 'Remove this line'
+    #assert False, 'Remove this line'
+    if limit < 0:
+        return limit + 1
+    if len(start) == 0:
+        return len(goal)
+    if len(goal) == 0:
+        return len(start)
+    if start[0]!=goal[0]:
+        return 1 + shifty_shifts(start[1:], goal[1:], limit - 1)
+    else:
+        return shifty_shifts(start[1:], goal[1:], limit)
     # END PROBLEM 6
 
 
 def pawssible_patches(start, goal, limit):
     """A diff function that computes the edit distance from START to GOAL."""
-    assert False, 'Remove this line'
+    #assert False, 'Remove this line'
 
-    if ______________: # Fill in the condition
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
+    # if ______________: # Fill in the condition
+    #     # BEGIN
+    #     "*** YOUR CODE HERE ***"
+    #     # END
 
-    elif ___________: # Feel free to remove or add additional cases
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
+    # elif ___________: # Feel free to remove or add additional cases
+    #     # BEGIN
+    #     "*** YOUR CODE HERE ***"
+    #     # END
 
+    # else:
+    #     add_diff = ... # Fill in these lines
+    #     remove_diff = ...
+    #     substitute_diff = ...
+    #     # BEGIN
+    #     "*** YOUR CODE HERE ***"
+    #     # END
+    if limit < 0:
+        return limit + 1
+    if len(start) == 0:
+        return len(goal)
+    if len(goal) == 0:
+        return len(start)
+    if start[0]==goal[0]:
+        return pawssible_patches(start[1:], goal[1:], limit)
     else:
-        add_diff = ... # Fill in these lines
-        remove_diff = ...
-        substitute_diff = ...
-        # BEGIN
-        "*** YOUR CODE HERE ***"
-        # END
+        add_diff = 1 + pawssible_patches(start, goal[1:], limit - 1)
+        remove_diff = 1 + pawssible_patches(start[1:], goal, limit - 1)
+        substitute_diff = 1 + pawssible_patches(start[1:], goal[1:], limit - 1)
+        return min(add_diff, remove_diff, substitute_diff)
 
 
 def final_diff(start, goal, limit):
@@ -146,6 +181,15 @@ def report_progress(typed, prompt, user_id, send):
     """Send a report of your id and progress so far to the multiplayer server."""
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    correct = 0
+    for i in range(len(typed)):
+        if typed[i] == prompt[i]:
+            correct += 1
+        else:
+            break
+    progress = correct / len(prompt)
+    send({'id': user_id, 'progress': progress})
+    return progress
     # END PROBLEM 8
 
 
@@ -172,6 +216,10 @@ def time_per_word(times_per_player, words):
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+    times = []
+    for player in times_per_player:
+        times.append([player[i] - player[i - 1] for i in range(1, len(player))])
+    return game(words, times)
     # END PROBLEM 9
 
 
@@ -187,6 +235,16 @@ def fastest_words(game):
     word_indices = range(len(all_words(game)))    # contains an *index* for each word
     # BEGIN PROBLEM 10
     "*** YOUR CODE HERE ***"
+    fastest = [[] for _ in player_indices]
+    for word_index in word_indices:
+        min_time = float('inf')
+        min_player = -1
+        for player_index in player_indices:
+            if time(game, player_index, word_index) < min_time:
+                min_time = time(game, player_index, word_index)
+                min_player = player_index
+        fastest[min_player].append(word_at(game, word_index))
+    return fastest
     # END PROBLEM 10
 
 
